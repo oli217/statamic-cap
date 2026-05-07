@@ -20,11 +20,7 @@ Basé sur [oliweb/laravel-cap](https://github.com/oli217/laravel-cap).
 composer require oliweb/statamic-cap
 ```
 
-Publier les assets du widget (JS + CSS) :
-
-```bash
-php artisan vendor:publish --tag=cap-assets
-```
+Les assets (JS + CSS) sont servis automatiquement par l'addon via des routes dédiées. Aucun `vendor:publish` n'est nécessaire.
 
 ---
 
@@ -98,6 +94,18 @@ Charger les assets dans le layout :
 La vérification du token est automatique : l'addon écoute l'événement `FormSubmitted` de Statamic et rejette la soumission si le token est invalide ou absent. Aucune configuration supplémentaire n'est nécessaire.
 
 En cas d'échec, une erreur de validation est retournée avec le message `statamic-cap::messages.validation_failed`.
+
+---
+
+## CSP strict et WASM local
+
+Par défaut, le widget charge son module WASM depuis jsDelivr (`cdn.jsdelivr.net`). Si vous avez une CSP stricte avec `connect-src 'self'`, téléchargez le WASM localement :
+
+```bash
+php artisan cap:publish-wasm
+```
+
+Le fichier est sauvegardé dans `storage/app/statamic-cap/cap_wasm_bg.wasm` et servi automatiquement via la route `/vendor/statamic-cap/cap_wasm_bg.wasm`. Le tag `{{ cap:scripts }}` injecte `window.CAP_CUSTOM_WASM_URL` pour que le widget l'utilise sans configuration supplémentaire.
 
 ---
 

@@ -10,14 +10,14 @@ class PublishWasm extends Command
 {
     protected $signature = 'cap:publish-wasm';
 
-    protected $description = 'Télécharge le WASM Cap et patche cap-widget.js pour un chargement local (CSP strict)';
+    protected $description = 'Télécharge le WASM Cap en local pour un chargement auto-hébergé (CSP strict)';
 
     public function handle(Http $http): int
     {
-        $jsPath = public_path('vendor/cap/cap-widget.js');
+        $jsPath = base_path('vendor/oliweb/laravel-cap/resources/js/cap-widget.js');
 
         if (! File::exists($jsPath)) {
-            $this->error('cap-widget.js introuvable. Lancez d\'abord : php artisan vendor:publish --tag=cap-assets');
+            $this->error('cap-widget.js introuvable dans vendor/oliweb/laravel-cap. Vérifiez votre installation Composer.');
 
             return Command::FAILURE;
         }
@@ -25,13 +25,14 @@ class PublishWasm extends Command
         $js = File::get($jsPath);
 
         if (! preg_match('/"(https:\/\/cdn\.jsdelivr\.net\/[^"]+\.wasm)"/', $js, $matches)) {
-            $this->error('URL WASM introuvable dans cap-widget.js. Le widget a peut-être déjà été patché.');
+            $this->error('URL WASM introuvable dans cap-widget.js.');
 
             return Command::FAILURE;
         }
 
-        $wasmCdnUrl  = $matches[1];
-        $wasmLocal   = public_path('vendor/cap/cap_wasm_bg.wasm');
+        $wasmCdnUrl = $matches[1];
+        $wasmDir    = storage_path('app/statamic-cap');
+        $wasmLocal  = $wasmDir . '/cap_wasm_bg.wasm';
 
         $this->info("Téléchargement du WASM depuis {$wasmCdnUrl}…");
 
@@ -43,22 +44,13 @@ class PublishWasm extends Command
             return Command::FAILURE;
         }
 
+        File::ensureDirectoryExists($wasmDir);
         File::put($wasmLocal, $response->body());
+
         $this->info('WASM enregistré dans ' . $wasmLocal);
-
-        // Patche le JS : remplace l'URL hardcodée par window.CAP_WASM_URL avec fallback CDN
-        $patched = str_replace(
-            '"' . $wasmCdnUrl . '"',
-            '(window.CAP_WASM_URL||"' . $wasmCdnUrl . '")',
-            $js
-        );
-
-        File::put($jsPath, $patched);
-        $this->info('cap-widget.js patché pour lire window.CAP_WASM_URL.');
-
         $this->newLine();
-        $this->line('Le tag <b>{{ cap:scripts }}</b> injecte automatiquement <b>window.CAP_WASM_URL</b>');
-        $this->line('dès que <b>public/vendor/cap/cap_wasm_bg.wasm</b> est présent.');
+        $this->line('Le tag <b>{{ cap:scripts }}</b> injecte automatiquement <b>window.CAP_CUSTOM_WASM_URL</b>');
+        $this->line('pointant vers la route <b>/vendor/statamic-cap/cap_wasm_bg.wasm</b>.');
         $this->line('Ajoutez <b>connect-src \'self\'</b> à votre CSP — plus besoin de whitelister jsDelivr.');
 
         return Command::SUCCESS;

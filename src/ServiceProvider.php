@@ -7,6 +7,7 @@ use Statamic\Facades\CP\Nav;
 use Statamic\Facades\YAML;
 use Statamic\Providers\AddonServiceProvider;
 use StatamicCap\Console\Commands\PublishWasm;
+use StatamicCap\Http\Controllers\AssetController;
 use StatamicCap\Http\Controllers\SettingsController;
 use StatamicCap\Listeners\ValidateCapToken;
 use StatamicCap\Tags\Cap;
@@ -34,6 +35,7 @@ class ServiceProvider extends AddonServiceProvider
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'statamic-cap');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'statamic-cap');
 
+        $this->bootWebRoutes();
         $this->bootCpRoutes();
         $this->bootCpNav();
 
@@ -53,6 +55,18 @@ class ServiceProvider extends AddonServiceProvider
         $settings = YAML::file($path)->parse();
 
         config(['statamic-cap' => array_merge(config('statamic-cap', []), $settings)]);
+    }
+
+    private function bootWebRoutes(): void
+    {
+        $this->registerWebRoutes(function () {
+            Route::get('vendor/statamic-cap/cap-widget.js', [AssetController::class, 'js'])
+                ->name('statamic-cap.assets.js');
+            Route::get('vendor/statamic-cap/cap-widget.css', [AssetController::class, 'css'])
+                ->name('statamic-cap.assets.css');
+            Route::get('vendor/statamic-cap/cap_wasm_bg.wasm', [AssetController::class, 'wasm'])
+                ->name('statamic-cap.assets.wasm');
+        });
     }
 
     private function bootCpRoutes(): void

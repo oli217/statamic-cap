@@ -28,23 +28,18 @@ class Cap extends Tags
      *
      * Injects:
      *   - window.CAP_CSP_NONCE / window.CAP_CSS_NONCE  (when nonce provided)
-     *   - window.CAP_WASM_URL                           (when local WASM is published)
+     *   - window.CAP_CUSTOM_WASM_URL                    (always — route vers /vendor/statamic-cap/cap_wasm_bg.wasm)
      *   - <script type="module"> for cap-widget.js
      */
     public function scripts(): string
     {
-        $nonce    = $this->params->get('nonce');
-        $src      = e(asset('vendor/cap/cap-widget.js'));
+        $nonce     = $this->params->get('nonce');
+        $src       = e(route('statamic-cap.assets.js'));
         $nonceAttr = $nonce ? ' nonce="' . e($nonce) . '"' : '';
 
         $globals = $this->buildGlobals($nonce);
 
-        $output = '';
-
-        if ($globals !== '') {
-            $output .= '<script' . $nonceAttr . '>' . $globals . '</script>' . "\n";
-        }
-
+        $output = '<script' . $nonceAttr . '>' . $globals . '</script>' . "\n";
         $output .= '<script type="module"' . $nonceAttr . ' src="' . $src . '"></script>';
 
         return $output;
@@ -56,7 +51,7 @@ class Cap extends Tags
      */
     public function styles(): string
     {
-        return '<link rel="stylesheet" href="' . e(asset('vendor/cap/cap-widget.css')) . '">';
+        return '<link rel="stylesheet" href="' . e(route('statamic-cap.assets.css')) . '">';
     }
 
     private function buildGlobals(?string $nonce): string
@@ -69,9 +64,10 @@ class Cap extends Tags
             $assignments[] = 'window.CAP_CSS_NONCE=' . $encoded;
         }
 
-        if (file_exists(public_path('vendor/cap/cap_wasm_bg.wasm'))) {
-            $assignments[] = 'window.CAP_WASM_URL=' . json_encode(asset('vendor/cap/cap_wasm_bg.wasm'));
-        }
+        // Le widget lit nativement window.CAP_CUSTOM_WASM_URL.
+        // On pointe toujours vers notre route — elle sert le WASM local si présent,
+        // sinon redirige vers le CDN jsdelivr.
+        $assignments[] = 'window.CAP_CUSTOM_WASM_URL=' . json_encode(route('statamic-cap.assets.wasm'));
 
         return implode(';', $assignments);
     }
