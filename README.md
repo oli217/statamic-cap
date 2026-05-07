@@ -9,7 +9,7 @@ Basé sur [oliweb/laravel-cap](https://github.com/oli217/laravel-cap).
 ## Prérequis
 
 - PHP 8.2+
-- Statamic 5.x
+- Statamic 5.x ou 6.x
 - Une instance Cap auto-hébergée
 
 ---
@@ -18,12 +18,6 @@ Basé sur [oliweb/laravel-cap](https://github.com/oli217/laravel-cap).
 
 ```bash
 composer require oliweb/statamic-cap
-```
-
-Publier la configuration :
-
-```bash
-php artisan vendor:publish --tag=statamic-cap-config
 ```
 
 Publier les assets du widget (JS + CSS) :
@@ -38,7 +32,7 @@ php artisan vendor:publish --tag=cap-assets
 
 ### Via le panneau Statamic CP
 
-Accéder à **Réglages > Cap** dans le panneau d'administration Statamic.
+Accéder à **Tools > Cap CAPTCHA** dans le panneau d'administration Statamic.
 
 | Champ | Description |
 |-------|-------------|
@@ -48,7 +42,11 @@ Accéder à **Réglages > Cap** dans le panneau d'administration Statamic.
 | Timeout (seconds) | Délai avant abandon de la requête vers `/siteverify` (défaut : `5`) |
 | Fail Open | Si activé, laisse passer la requête en cas d'erreur de communication avec Cap |
 
+Les réglages sont sauvegardés dans `storage/statamic/addons/statamic-cap.yaml`.
+
 ### Via variables d'environnement
+
+Les variables d'environnement servent de valeurs par défaut et sont surchargées par les réglages CP.
 
 ```env
 CAP_ENDPOINT=https://cap.example.com/votre-site-key/
@@ -99,18 +97,18 @@ Charger les assets dans le layout :
 
 La vérification du token est automatique : l'addon écoute l'événement `FormSubmitted` de Statamic et rejette la soumission si le token est invalide ou absent. Aucune configuration supplémentaire n'est nécessaire.
 
-En cas d'échec, une erreur de validation est retournée avec le message du fichier de traduction `statamic-cap::messages.validation_failed`.
+En cas d'échec, une erreur de validation est retournée avec le message `statamic-cap::messages.validation_failed`.
 
 ---
 
 ## Traductions
 
-Les traductions sont disponibles en anglais et en français.
+Les traductions sont disponibles en anglais et en français. Les chaînes couvrent la validation, les messages d'erreur et les libellés de la page de réglages CP.
 
-Pour les personnaliser, publier les fichiers de langue :
+Pour les personnaliser, copier et modifier `resources/lang/{locale}/messages.php` dans votre projet :
 
-```bash
-php artisan vendor:publish --tag=cap-lang
+```
+lang/vendor/statamic-cap/{locale}/messages.php
 ```
 
 ---
