@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Statamic\Facades\CP\Nav;
 use Statamic\Facades\YAML;
 use Statamic\Providers\AddonServiceProvider;
+use StatamicCap\Console\Commands\PublishWasm;
 use StatamicCap\Http\Controllers\SettingsController;
 use StatamicCap\Listeners\ValidateCapToken;
 use StatamicCap\Tags\Cap;
@@ -14,6 +15,10 @@ class ServiceProvider extends AddonServiceProvider
 {
     protected $tags = [
         Cap::class,
+    ];
+
+    protected $commands = [
+        PublishWasm::class,
     ];
 
     protected $listen = [

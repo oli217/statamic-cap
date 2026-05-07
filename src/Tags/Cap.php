@@ -11,35 +11,43 @@ class Cap extends Tags
     /**
      * {{ cap }}
      * Renders the Cap widget HTML element.
+     *
+     * Note: the nonce for inline styles is set via window.CAP_CSS_NONCE
+     * in {{ cap:scripts }}, not via a data attribute.
      */
     public function index(): string
     {
         $endpoint = config('statamic-cap.endpoint', config('cap.endpoint'));
-        $nonce = $this->params->get('nonce');
 
-        $attrs = 'data-cap-api-endpoint="' . e($endpoint) . '"';
-
-        if ($nonce) {
-            $attrs .= ' data-cap-csp-nonce="' . e($nonce) . '"';
-        }
-
-        return '<cap-widget ' . $attrs . '></cap-widget>';
+        return '<cap-widget data-cap-api-endpoint="' . e($endpoint) . '"></cap-widget>';
     }
 
     /**
      * {{ cap:scripts }}
-     * Renders the Cap JS script tag.
+     * {{ cap:scripts nonce="x" }}
+     *
+     * Injects:
+     *   - window.CAP_CSP_NONCE / window.CAP_CSS_NONCE  (when nonce provided)
+     *   - window.CAP_WASM_URL                           (when local WASM is published)
+     *   - <script type="module"> for cap-widget.js
      */
     public function scripts(): string
     {
-        $nonce = $this->params->get('nonce');
-        $src = e(asset('vendor/cap/cap-widget.js'));
+        $nonce    = $this->params->get('nonce');
+        $src      = e(asset('vendor/cap/cap-widget.js'));
+        $nonceAttr = $nonce ? ' nonce="' . e($nonce) . '"' : '';
 
-        if ($nonce) {
-            return '<script type="module" nonce="' . e($nonce) . '" src="' . $src . '"></script>';
+        $globals = $this->buildGlobals($nonce);
+
+        $output = '';
+
+        if ($globals !== '') {
+            $output .= '<script' . $nonceAttr . '>' . $globals . '</script>' . "\n";
         }
 
-        return '<script type="module" src="' . $src . '"></script>';
+        $output .= '<script type="module"' . $nonceAttr . ' src="' . $src . '"></script>';
+
+        return $output;
     }
 
     /**
@@ -49,5 +57,22 @@ class Cap extends Tags
     public function styles(): string
     {
         return '<link rel="stylesheet" href="' . e(asset('vendor/cap/cap-widget.css')) . '">';
+    }
+
+    private function buildGlobals(?string $nonce): string
+    {
+        $assignments = [];
+
+        if ($nonce) {
+            $encoded = json_encode($nonce);
+            $assignments[] = 'window.CAP_CSP_NONCE=' . $encoded;
+            $assignments[] = 'window.CAP_CSS_NONCE=' . $encoded;
+        }
+
+        if (file_exists(public_path('vendor/cap/cap_wasm_bg.wasm'))) {
+            $assignments[] = 'window.CAP_WASM_URL=' . json_encode(asset('vendor/cap/cap_wasm_bg.wasm'));
+        }
+
+        return implode(';', $assignments);
     }
 }
