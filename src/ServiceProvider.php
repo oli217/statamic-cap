@@ -39,9 +39,15 @@ class ServiceProvider extends AddonServiceProvider
         $this->bootCpRoutes();
         $this->bootCpNav();
 
-        $this->publishes([
-            __DIR__ . '/../config/statamic-cap.php' => config_path('statamic-cap.php'),
-        ], 'statamic-cap-config');
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../config/statamic-cap.php' => config_path('statamic-cap.php'),
+            ], 'statamic-cap-config');
+
+            $this->publishes([
+                __DIR__ . '/../resources/lang' => lang_path('vendor/statamic-cap'),
+            ], 'statamic-cap-lang');
+        }
     }
 
     private function loadSettingsFromYaml(): void
