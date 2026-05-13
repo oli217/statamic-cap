@@ -57,4 +57,15 @@ return [
     |
     */
     'fail_open' => (bool) env('CAP_FAIL_OPEN', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Masquer le lien d'attribution
+    |--------------------------------------------------------------------------
+    |
+    | Quand true, le lien "Cap" affiché en bas à droite du widget est masqué
+    | via cap-widget::part(attribution) { display: none }.
+    |
+    */
+    'hide_attribution' => (bool) env('CAP_HIDE_ATTRIBUTION', false),
 ];

@@ -16,4 +16,19 @@ return [
     'field_fail_open'        => 'Fail Open',
     'field_fail_open_hint'   => 'Wenn aktiviert, lässt jeder Kommunikationsfehler mit Cap die Anfrage durch. Ein explizit ungültiges Token wird immer abgelehnt.',
     'save'                   => 'Speichern',
+
+    'field_hide_attribution'      => 'Attributionslink ausblenden',
+    'field_hide_attribution_hint' => 'Blendet den "Cap"-Link unten rechts im Widget aus.',
+
+    'widget_initial_state'        => 'Beweise, dass du ein Mensch bist',
+    'widget_required_label'       => 'Bitte beweise, dass du ein Mensch bist',
+    'widget_verifying_label'      => 'Wird überprüft…',
+    'widget_verifying_aria_label' => 'Überprüfung läuft, bitte warten',
+    'widget_verified_aria_label'  => 'Sie wurden verifiziert, Sie können fortfahren',
+    'widget_error_label'          => 'Fehler',
+    'widget_error_aria_label'     => 'Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut',
+    'widget_wasm_disabled'        => 'WASM aktivieren für deutlich schnellere Lösung',
+    'widget_verify_aria_label'    => 'Klicken Sie, um zu beweisen, dass Sie ein Mensch sind',
+    'widget_troubleshooting_label' => 'Fehlerbehebung',
+    'widget_solved_label'         => 'Sie sind ein Mensch',
 ];

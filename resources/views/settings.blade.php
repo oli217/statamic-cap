@@ -91,6 +91,18 @@
                     <p class="text-sm text-grey mt-1 ml-6">{{ __('statamic-cap::messages.field_fail_open_hint') }}</p>
                 </div>
 
+                <div class="form-group mb-4">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="hidden" name="hide_attribution" value="0">
+                        <input type="checkbox"
+                               name="hide_attribution"
+                               value="1"
+                               @checked(old('hide_attribution', $settings['hide_attribution'] ?? false))>
+                        <span class="font-bold text-sm">{{ __('statamic-cap::messages.field_hide_attribution') }}</span>
+                    </label>
+                    <p class="text-sm text-grey mt-1 ml-6">{{ __('statamic-cap::messages.field_hide_attribution_hint') }}</p>
+                </div>
+
             </div>
 
             <div class="mt-6">

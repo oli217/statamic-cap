@@ -16,4 +16,19 @@ return [
     'field_fail_open'      => 'Fail Open',
     'field_fail_open_hint' => 'When enabled, any communication error with Cap lets the request through. An explicitly invalid token is always rejected.',
     'save'                 => 'Save',
+
+    'field_hide_attribution'      => 'Hide attribution link',
+    'field_hide_attribution_hint' => 'Hide the "Cap" link displayed in the bottom-right corner of the widget.',
+
+    'widget_initial_state'        => "Verify you're human",
+    'widget_required_label'       => "Please verify you're human",
+    'widget_verifying_label'      => 'Verifying...',
+    'widget_verifying_aria_label' => "Verifying you're a human, please wait",
+    'widget_verified_aria_label'  => "We have verified you're a human, you may now continue",
+    'widget_error_label'          => 'Error',
+    'widget_error_aria_label'     => 'An error occurred, please try again',
+    'widget_wasm_disabled'        => 'Enable WASM for significantly faster solving',
+    'widget_verify_aria_label'    => "Click to verify you're a human",
+    'widget_troubleshooting_label' => 'Troubleshoot',
+    'widget_solved_label'         => "You're a human",
 ];

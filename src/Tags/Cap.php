@@ -19,7 +19,27 @@ class Cap extends Tags
     {
         $endpoint = config('statamic-cap.endpoint', config('cap.endpoint'));
 
-        return '<cap-widget data-cap-api-endpoint="' . e($endpoint) . '"></cap-widget>';
+        $i18n = [
+            'initial-state'        => 'widget_initial_state',
+            'required-label'       => 'widget_required_label',
+            'verifying-label'      => 'widget_verifying_label',
+            'verifying-aria-label' => 'widget_verifying_aria_label',
+            'verified-aria-label'  => 'widget_verified_aria_label',
+            'error-label'          => 'widget_error_label',
+            'error-aria-label'     => 'widget_error_aria_label',
+            'wasm-disabled'        => 'widget_wasm_disabled',
+            'verify-aria-label'    => 'widget_verify_aria_label',
+            'troubleshooting-label' => 'widget_troubleshooting_label',
+            'solved-label'         => 'widget_solved_label',
+        ];
+
+        $attrs = 'data-cap-api-endpoint="' . e($endpoint) . '"';
+
+        foreach ($i18n as $widgetKey => $msgKey) {
+            $attrs .= ' data-cap-i18n-' . $widgetKey . '="' . e(__('statamic-cap::messages.' . $msgKey)) . '"';
+        }
+
+        return '<cap-widget ' . $attrs . '></cap-widget>';
     }
 
     /**
@@ -51,7 +71,13 @@ class Cap extends Tags
      */
     public function styles(): string
     {
-        return '<link rel="stylesheet" href="' . e(route('statamic-cap.assets.css')) . '">';
+        $css = '<link rel="stylesheet" href="' . e(route('statamic-cap.assets.css')) . '">';
+
+        if (config('statamic-cap.hide_attribution', false)) {
+            $css .= "\n" . '<style>cap-widget::part(attribution){display:none}</style>';
+        }
+
+        return $css;
     }
 
     private function buildGlobals(?string $nonce): string
