@@ -5,6 +5,7 @@ namespace StatamicCap\Http\Controllers;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
+use Symfony\Component\HttpFoundation\Response as BaseResponse;
 
 class AssetController extends Controller
 {
@@ -46,7 +47,7 @@ class AssetController extends Controller
         ]);
     }
 
-    public function wasm(): Response
+    public function wasm(): BaseResponse
     {
         $local = storage_path('app/statamic-cap/cap_wasm_bg.wasm');
 
