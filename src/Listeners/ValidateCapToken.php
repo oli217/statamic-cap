@@ -11,7 +11,7 @@ class ValidateCapToken
     public function handle(FormSubmitted $event): void
     {
         $tokenField = config('statamic-cap.token_field', 'cap-token');
-        $token = $event->submission->get($tokenField);
+        $token = request()->input($tokenField);
 
         if (! Cap::verify((string) $token)) {
             throw ValidationException::withMessages([
