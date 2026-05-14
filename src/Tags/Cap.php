@@ -80,6 +80,30 @@ class Cap extends Tags
         return $css;
     }
 
+    /**
+     * {{ cap:config }}
+     * {{ cap:config nonce="x" }}
+     *
+     * Expose l'endpoint et le nom du champ token en JavaScript pour le mode programmatic.
+     * À placer avant {{ cap:scripts }}.
+     *
+     * Usage :
+     *   const cap = new Cap({ apiEndpoint: window.CAP_API_ENDPOINT });
+     *   const { token } = await cap.solve();
+     */
+    public function config(): string
+    {
+        $endpoint   = config('statamic-cap.endpoint', config('cap.endpoint'));
+        $tokenField = config('statamic-cap.token_field', config('cap.token_field', 'cap-token'));
+        $nonce      = $this->params->get('nonce');
+        $nonceAttr  = $nonce ? ' nonce="' . e($nonce) . '"' : '';
+
+        return '<script' . $nonceAttr . '>'
+            . 'window.CAP_API_ENDPOINT=' . json_encode($endpoint) . ';'
+            . 'window.CAP_TOKEN_FIELD=' . json_encode($tokenField) . ';'
+            . '</script>';
+    }
+
     private function buildGlobals(?string $nonce): string
     {
         $assignments = [];
